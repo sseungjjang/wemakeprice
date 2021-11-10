@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Assignment";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <title>Index</title>
+</head>
+<body>
+    <div>
+        <p>[입력]</p> 
+        <div style="height:40px">
+            <label style="width:100px">URL</label><input type="text" id="url" style="width:350px"  value="" />
+        </div>
+        <div style="height:40px">
+            <label style="width:100px">Type</label><select id="typeSel" style="width:200px"><option value="A">HTML 태그 제외</option><option value="B">Text 전체</option></select>
+        </div>
+        <div style="height:40px">
+            <label style="width:100px">출력단위묶음</label><input type="text" id="bundle" onKeyup="this.value=this.value.replace(/[^0-9]/g,'');"/>
+        </div>
+        <div style="height:40px"  align="right">
+            <input type="button" value="출력" id="btnExport" onclick="" />
+        </div>
+        <div>
+            <p>[출력]</p>
+        </div>
+        <div style="height:200px">
+            <label style="width:100px">몫</label>
+            <div id="shareText" style="width:100%;overflow:auto;height:200px">
+            </div>
+        </div>
+        <div style="height:200px">
+            <label style="width:100px">나머지</label>
+            <div id="restText" style="width:100%;overflow:auto;height:200px">
+            </div>            
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //출력버튼 클릭시 ajax 호출로 입력값 처리
+            $("#btnExport").click(function () {
+                if($("#url").val() == "" || $("#bundle").val() == ""){
+                    alert("필수 입력값 입력");
+                    return;
+                }
+
+                $("#shareText").html("");
+                $("#restText").html("");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/ExportStr",
+                    data: { "url": $("#url").val(), "type" : $("#typeSel").val(), "bundle" :  $("#bundle").val()},
+                    success: function (response) {
+                        if(response.error != null){
+                            alert(response.error);
+                        }else{
+                            $("#shareText").text(response.shareVal);
+                            $("#restText").text(response.restVal);
+                        }
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                   }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
